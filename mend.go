@@ -35,6 +35,7 @@ func mend(dst, src reflect.Value) error {
 			dstIndex := dst.MapIndex(key)
 
 			if !isZero(srcIndex) && isZero(dstIndex) {
+
 				dst.SetMapIndex(key, srcIndex)
 			} else {
 				switch reflect.TypeOf(srcIndex.Interface()).Kind() {
@@ -47,10 +48,12 @@ func mend(dst, src reflect.Value) error {
 		mend(dst.Elem(), src)
 
 	default:
-		if !isZero(src.Interface()) && isZero(dst.Interface()) {
-			dst.Set(src)
+		if dst.CanSet() {
+			// dest is empty and src has a value
+			if !isZero(src.Interface()) && isZero(dst.Interface()) {
+				dst.Set(src)
+			}
 		}
-
 	}
 	return nil
 }
